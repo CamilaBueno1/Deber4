@@ -1,98 +1,66 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from 'react';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { POR_PAGINA } from '@/api/pokemon.service';
+import { DetallePokemon } from '@/components/DetallePokemon';
+import { Brand } from '@/constants/brand';
+import { usePokemonLista } from '@/hooks/usePokemon';
+import { capitalizar, idDesdeUrl, imagenOficial } from '@/lib/pokemon';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+export default function Catalogo() {
+  const [pagina, setPagina] = useState(1);
+  const [seleccion, setSeleccion] = useState<number | null>(null);
+  const { data, isLoading, error } = usePokemonLista(pagina);
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+  if (isLoading) return <ActivityIndicator style={{ flex: 1, backgroundColor: Brand.bg }} color={Brand.accent} />;
+  if (error && !data) return <Text style={s.error}>No se pudo cargar: {error.message}</Text>;
+
+  const totalPaginas = data ? Math.ceil(data.count / POR_PAGINA) : 1;
+
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
+    <View style={s.pantalla}>
+      <FlatList
+        data={data?.results}
+        keyExtractor={(p) => p.name}
+        contentContainerStyle={{ padding: 16, gap: 12 }}
+        renderItem={({ item }) => {
+          const id = idDesdeUrl(item.url);
+          return (
+            <Pressable style={s.fila} onPress={() => setSeleccion(id)}>
+              <Image source={imagenOficial(id)} style={s.foto} contentFit="contain" />
+              <View style={{ flex: 1 }}>
+                <Text style={s.numero}>N.º {String(id).padStart(3, '0')}</Text>
+                <Text style={s.nombre}>{capitalizar(item.name)}</Text>
+              </View>
+            </Pressable>
+          );
+        }}
+        ListFooterComponent={
+          <View style={s.pager}>
+            <Pressable disabled={!data?.previous} onPress={() => setPagina((p) => p - 1)} style={[s.pagBtn, !data?.previous && { opacity: 0.35 }]}>
+              <Text style={s.pagTxt}>Anterior</Text>
+            </Pressable>
+            <Text style={s.dato}>Página {pagina} de {totalPaginas}</Text>
+            <Pressable disabled={!data?.next} onPress={() => setPagina((p) => p + 1)} style={[s.pagBtn, !data?.next && { opacity: 0.35 }]}>
+              <Text style={s.pagTxt}>Siguiente</Text>
+            </Pressable>
+          </View>
+        }
+      />
+      <DetallePokemon id={seleccion} onClose={() => setSeleccion(null)} />
+    </View>
   );
 }
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+const s = StyleSheet.create({
+  pantalla: { flex: 1, backgroundColor: Brand.bg },
+  error: { color: Brand.danger, padding: 20 },
+  fila: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: Brand.surface, borderRadius: Brand.radius, padding: 12, borderWidth: 1, borderColor: Brand.border, borderLeftWidth: 4, borderLeftColor: Brand.accent },
+  foto: { width: 72, height: 72 },
+  numero: { color: Brand.accent, fontSize: 11, fontWeight: '900', letterSpacing: 1.1 },
+  nombre: { color: Brand.text, fontSize: 18, fontWeight: '800', marginTop: 2 },
+  dato: { color: Brand.muted },
+  pager: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8 },
+  pagBtn: { borderWidth: 1, borderColor: Brand.accent, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 8 },
+  pagTxt: { color: Brand.accent, fontWeight: '800' },
 });

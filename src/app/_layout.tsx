@@ -1,18 +1,29 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
+import { Tabs } from 'expo-router';
+import { EstadoRed } from '@/components/EstadoRed';
+import { Brand } from '@/constants/brand';
+import { MAX_AGE } from '@/lib/cacheConfig';
+import { alRestaurarCache, persister, queryClient } from '@/lib/queryClient';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister, maxAge: MAX_AGE }}
+      onSuccess={alRestaurarCache}>
+      <Tabs
+        screenOptions={{
+          headerStyle: { backgroundColor: Brand.surface },
+          headerTintColor: Brand.text,
+          headerRight: () => <EstadoRed />,
+          tabBarStyle: { backgroundColor: Brand.surface, borderTopColor: Brand.border },
+          tabBarActiveTintColor: Brand.accent,
+          tabBarInactiveTintColor: Brand.muted,
+        }}>
+        <Tabs.Screen name="index" options={{ title: 'Pokédex' }} />
+        <Tabs.Screen name="favoritos" options={{ title: 'Favoritos' }} />
+        <Tabs.Screen name="logs" options={{ title: 'Registro' }} />
+      </Tabs>
+    </PersistQueryClientProvider>
   );
 }
