@@ -1,6 +1,6 @@
 export interface Favorito {
   id: string; 
-  personajeId: number; 
+  pokemonId: number; 
   nombre: string; 
   imagen: string; 
   nota: string; 
