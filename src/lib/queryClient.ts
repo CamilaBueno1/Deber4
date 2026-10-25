@@ -6,7 +6,7 @@ import { favoritosService } from '../api/favoritos.service';
 import { Favorito, NuevoFavorito } from '../types/favorito';
 import { MAX_AGE } from './cacheConfig';
 import { log } from './logger';
-import { mutationKeys, queryKeys } from './querykeys';
+import { mutationKeys, queryKeys } from './queryKeys';
 
 // QueryClient: gcTime por defecto
 export const queryClient = new QueryClient({
