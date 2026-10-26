@@ -1,9 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
+import { mutationKeys } from '../config/queryKeys';
 import { Favorito } from '../types/favorito';
-import { mutationKeys } from '../lib/queryKeys';
 
 export function useEditarFavorito() {
-  return useMutation<Favorito, Error, Favorito>({ 
-    mutationKey: mutationKeys.editarFavorito 
-});
+  return useMutation<Favorito, Error, Favorito>({ mutationKey: mutationKeys.editarFavorito });
 }

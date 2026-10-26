@@ -1,8 +1,8 @@
 export const queryKeys = {
-  pokemon: {
-    all: ['pokemon'] as const,
-    lista: (pagina: number) => ['pokemon', 'lista', pagina] as const,
-    detalle: (id: number) => ['pokemon', 'detalle', id] as const,
+  personajes: {
+    all: ['personajes'] as const,
+    lista: (pagina: number) => ['personajes', 'lista', pagina] as const,
+    detalle: (id: number) => ['personajes', 'detalle', id] as const,
   },
   favoritos: {
     all: ['favoritos'] as const,

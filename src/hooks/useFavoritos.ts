@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { favoritosService } from '../api/favoritos.service';
-import { PROPIA } from '../lib/cacheConfig';
-import { log } from '../lib/logger';
-import { queryKeys } from '../lib/queryKeys';
+import { PROPIA } from '../config/cacheConfig';
+import { queryKeys } from '../config/queryKeys';
+import { log } from '../utils/logger';
 
 export function useFavoritos() {
   return useQuery({

@@ -13,6 +13,8 @@ export function log(msg: string) {
 }
 export const suscribirLogs = (o: () => void) => {
   oyentes.add(o);
-  return () => oyentes.delete(o);
+  return () => {
+    oyentes.delete(o);
+  };
 };
 export const obtenerLogs = () => entradas;

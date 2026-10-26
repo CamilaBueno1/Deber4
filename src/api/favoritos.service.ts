@@ -1,5 +1,5 @@
-import { client } from './client';
 import { Favorito, NuevoFavorito } from '../types/favorito';
+import { client } from './client';
 
 export const favoritosService = {
   lista: async () => (await client.get<Favorito[]>('favoritos')).data,

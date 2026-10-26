@@ -1,6 +1,6 @@
 import { useMutationState } from '@tanstack/react-query';
+import { mutationKeys } from '../config/queryKeys';
 import { Favorito, NuevoFavorito } from '../types/favorito';
-import { mutationKeys } from '../lib/queryKeys';
 
 export function usePendientes() {
   const crear = useMutationState({
