@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { log } from '../lib/logger';
-import { Pokemon, RespuestaPokemon } from '../types/pokemon';
+import { Pokemon, RespuestaPokemon } from '../types/personaje';
 
 // Cliente de PokeAPI: API pública de solo lectura
 const publico = axios.create({
