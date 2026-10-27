@@ -8,7 +8,7 @@ export function useFavoritos() {
   return useQuery({
     queryKey: queryKeys.favoritos.lista(),
     queryFn: () => {
-      log('GET favoritos (MockAPI)');
+      log('Consultando favoritos en MockAPI');
       return favoritosService.lista();
     },
     ...PROPIA,

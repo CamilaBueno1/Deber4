@@ -9,7 +9,7 @@ export function usePersonajesLista(pagina: number) {
   return useQuery({
     queryKey: queryKeys.personajes.lista(pagina),
     queryFn: () => {
-      log(`GET character?page=${pagina} (Rick and Morty)`);
+      log(`Consultando personajes: pagina=${pagina} (API Rick and Morty)`);
       return personajesService.lista(pagina);
     },
     ...PUBLICA,
@@ -24,7 +24,7 @@ export function usePersonajeDetalle(base: Personaje | null) {
   return useQuery({
     queryKey: queryKeys.personajes.detalle(id),
     queryFn: () => {
-      log(`GET character/${id} (Rick and Morty)`);
+      log(`Consultando detalle del personaje: id=${id} (API Rick and Morty)`);
       return personajesService.detalle(id);
     },
     enabled: base != null,
